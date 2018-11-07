@@ -10,13 +10,13 @@
 // 
 
 // How many leds are in the strip?
-#define NUM_LEDS 16
+#define NUM_LEDS 13
 
 // Data pin that led data will be written out over
-#define DATA_PIN 6
+#define DATA_PIN 7
 
 boolean State = false;
-int THRESHOLD = 100;
+int THRESHOLD = 300;
 
 
 
@@ -24,23 +24,30 @@ int THRESHOLD = 100;
 // This is an array of leds.  One item for each led in your strip.
 CRGB leds[NUM_LEDS];
 
-CapacitiveSensor   cs_4_2 = CapacitiveSensor(4,2);        // 10M resistor between pins 4 & 2, pin 2 is sensor pin, add a wire and or foil if desired
-CapacitiveSensor   cs_4_3 = CapacitiveSensor(4,3);        // 10M resistor between pins 4 & 2, pin 2 is sensor pin, add a wire and or foil if desired
+CapacitiveSensor   cs_1 = CapacitiveSensor(6,2);       
+CapacitiveSensor   cs_2 = CapacitiveSensor(6,3);        
+CapacitiveSensor   cs_3 = CapacitiveSensor(6,4);  
+CapacitiveSensor   cs_4 = CapacitiveSensor(6,5);        
+
 
 
 // This function sets up the ledsand tells the controller about them
 void setup() {
       FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-       cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
-       cs_4_3.set_CS_AutocaL_Millis(0xFFFFFFFF);
+       cs_1.set_CS_AutocaL_Millis(0xFFFFFFFF);
+       cs_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
+       cs_3.set_CS_AutocaL_Millis(0xFFFFFFFF);
+       cs_4.set_CS_AutocaL_Millis(0xFFFFFFFF);
         Serial.begin(9600);
 }
 
 void loop() {
-  long touch =  cs_4_2.capacitiveSensor(30);
+  long touch =  cs_1.capacitiveSensor(30);
   boolean pressed = false;
   
-  long touch2 =  cs_4_3.capacitiveSensor(30);
+  long touch2 =  cs_2.capacitiveSensor(30);
+  long touch3 =  cs_3.capacitiveSensor(30);
+  long touch4 =  cs_4.capacitiveSensor(30);
   
   if(touch > THRESHOLD && !pressed){
    for(int whiteLed = 0; whiteLed < NUM_LEDS; whiteLed = whiteLed + 1) {
@@ -64,8 +71,18 @@ else if(!State){
       FastLED.show();
    }
 }
+Serial.print("Sensor1: ");
 Serial.print(touch);                  // print sensor output 1
 Serial.print("\t");
-Serial.println(touch2);                  // print sensor output 1
-delay(10);
+Serial.print("Sensor2: ");
+Serial.print(touch2);
+Serial.print("\t");
+Serial.print("Sensor3: ");
+Serial.print(touch3);
+Serial.print("\t");
+Serial.print("Sensor4: ");
+Serial.print(touch4);
+Serial.println();
+
+delay(50);
 }
