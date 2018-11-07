@@ -24,8 +24,11 @@ int THRESHOLD = 300;
 // This is an array of leds.  One item for each led in your strip.
 CRGB leds[NUM_LEDS];
 
-CapacitiveSensor   cs_1 = CapacitiveSensor(6,2);       
-CapacitiveSensor   cs_2 = CapacitiveSensor(6,3);        
+// do next : Try to matrix !
+
+
+CapacitiveSensor   cs_1 = CapacitiveSensor(3,2);       
+CapacitiveSensor   cs_2 = CapacitiveSensor(2,3);        
 CapacitiveSensor   cs_3 = CapacitiveSensor(6,4);  
 CapacitiveSensor   cs_4 = CapacitiveSensor(6,5);        
 
