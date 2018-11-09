@@ -37,11 +37,7 @@ CapacitiveSensor   cs_4 = CapacitiveSensor(6,5);
 // This function sets up the ledsand tells the controller about them
 void setup() {
       FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-       cs_1.set_CS_AutocaL_Millis(0xFFFFFFFF);
-       cs_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
-       cs_3.set_CS_AutocaL_Millis(0xFFFFFFFF);
-       cs_4.set_CS_AutocaL_Millis(0xFFFFFFFF);
-        Serial.begin(9600);
+      Serial.begin(9600);
 }
 
 void loop() {
