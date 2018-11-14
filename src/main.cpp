@@ -1,52 +1,44 @@
 #include <FastLED.h>
 #include <CapacitiveSensor.h>
-#include "capSense.h";
-#include "led.h";
+#include "defines.h"
+//#include "capSense.h"
+#include "led.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-// How many leds are in the Circle?
-#define NUM_LEDS 13
-// Data pin that led data will be written out over
-#define DATA_PIN 7
-// Common pin of the sensors
-#define COMMON_PIN      6 
-// Lower number=faster sensing, but lower accuracy
-#define NUM_OF_SAMPLES  1 
-// Sensing threshhold
-#define CAP_THRESHOLD   300
-// Number of sensors
-#define NUM_OF_KEYS     4
+
 
 #define CS(Y) CapacitiveSensor(COMMON_PIN, Y)
 
 // Initiate Sensors - Receive pin in brackets
 CapacitiveSensor sensor[] = {CS(2), CS(3), CS(4), CS(5)};
 
-boolean State = false;
 
-// Initiate LEDs
-CRGB leds[NUM_LEDS];
+LedRing LED[] = {LedRing(0),LedRing(1),LedRing(2),LedRing(3)};
 
 
 // This function sets up the ledsand tells the controller about them
 void setup() {
-      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS*NUM_OF_KEYS);
       Serial.begin(9600);
+      Serial.println("SETUP"); 
 }
 
 void loop() {
-      
-      
+
       for (int i = 0; i < NUM_OF_KEYS; ++i){
             long sense = sensor[i].capacitiveSensor(NUM_OF_SAMPLES);
             if(sense > CAP_THRESHOLD){
-                  Serial.print("Sensor" + i + ": ");
+                  Serial.print("Sensor");  
+                  Serial.print(i); 
+                  Serial.print(": "); 
                   Serial.print(sense);                 
                   Serial.print("\t");
-            }  
+                  LED[i].on1();
+            } else{
+                  LED[i].off();
+            } 
       }
-      Serial.println();
       
       /*
       
@@ -97,5 +89,4 @@ Serial.println();
 
 */
 
-delay(10);
 }
