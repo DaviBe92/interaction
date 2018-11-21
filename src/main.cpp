@@ -1,92 +1,140 @@
 #include <FastLED.h>
 #include <CapacitiveSensor.h>
 #include "defines.h"
-//#include "capSense.h"
 #include "led.h"
+#include "player.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-#define CS(Y) CapacitiveSensor(COMMON_PIN, Y)
-
-// Initiate Sensors - Receive pin in brackets
-CapacitiveSensor sensor[] = {CS(2), CS(3), CS(4), CS(5)};
-
-
-LedRing LED[] = {LedRing(0),LedRing(1),LedRing(2),LedRing(3)};
-
+LedRing LED[] = {LedRing(0, 2), LedRing(1, 3), LedRing(2, 4), LedRing(3, 5)};
+Player one;
+Player two;
 
 // This function sets up the ledsand tells the controller about them
-void setup() {
-      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS*NUM_OF_KEYS);
+void setup()
+{
+      FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS * NUM_OF_KEYS);
+      //Random seed
+      randomSeed(analogRead(0));
       Serial.begin(9600);
-      Serial.println("SETUP"); 
+      Serial.println("SETUP");
 }
 
-void loop() {
+void startgame()
+{
 
-      for (int i = 0; i < NUM_OF_KEYS; ++i){
-            long sense = sensor[i].capacitiveSensor(NUM_OF_SAMPLES);
-            if(sense > CAP_THRESHOLD){
-                  Serial.print("Sensor");  
-                  Serial.print(i); 
-                  Serial.print(": "); 
-                  Serial.print(sense);                 
-                  Serial.print("\t");
-                  LED[i].on1();
-            } else{
-                  LED[i].off();
-            } 
+      // Wait for both Players
+      LED[START_A].on1();
+      LED[START_B].on2();
+      while (!(LED[START_A].sense() && LED[START_B].sense()))
+      {
+            delay(10);
       }
-      
-      /*
-      
-      
-  long touch =  cs_1.capacitiveSensor(30);
-  boolean pressed = false;
-  
-  long touch2 =  cs_2.capacitiveSensor(30);
-  long touch3 =  cs_3.capacitiveSensor(30);
-  long touch4 =  cs_4.capacitiveSensor(30);
-  
-  if(touch > THRESHOLD && !pressed){
-   for(int whiteLed = 0; whiteLed < NUM_LEDS; whiteLed = whiteLed + 1) {
-     leds[whiteLed] = CRGB::Black;
-      // Show the leds (only one of which is set to white, from above)
-      FastLED.show();
-   }
-    State = !State;
-    delay(200);
-    pressed = true;
-  } else if (touch2 > THRESHOLD) {
-     State = false;
-  }
-  
-  
-  
-else if(!State){
-      for(int whiteLed = 0; whiteLed < NUM_LEDS; whiteLed = whiteLed + 1) {
-      leds[whiteLed] = CRGB( 0,  0, 25);
-      // Show the leds (only one of which is set to white, from above)
-      FastLED.show();
-   }
+      LED[START_A].off();
+      LED[START_B].off();
+      delay(REFRESH_DELAY);
+
+      // Splash screen
+
+      for (int i = 0; i < NUM_OF_KEYS / 2; i++)
+      {
+            LED[i].on1();
+            LED[i + NUM_OF_KEYS / 2].on2();
+            delay(REFRESH_DELAY);
+      }
+
+      delay(SPLASH_DELAY);
+
+      for (int i = 0; i < NUM_OF_KEYS; i++)
+      {
+            LED[i].off();
+            delay(REFRESH_DELAY);
+      }
 }
-      
-Serial.print("Sensor1: ");
-Serial.print(touch);                  // print sensor output 1
-Serial.print("\t");
-Serial.print("Sensor2: ");
-Serial.print(touch2);
-Serial.print("\t");
-Serial.print("Sensor3: ");
-Serial.print(touch3);
-Serial.print("\t");
-Serial.print("Sensor4: ");
-Serial.print(touch4);
-Serial.println();
 
+void rungame()
+{
 
-*/
+      // Light up 2 random buttons , make sure not the same
+      int ran1 = random(NUM_OF_KEYS);
+      int ran2 = random(NUM_OF_KEYS);
+      while (ran1 == ran2)
+      {
+            ran2 = random(NUM_OF_KEYS);
+      }
+      LED[ran1].on1();
+      LED[ran2].on2();
 
+      // wait for input, (timeout?)
+      bool touch = false;
+      while (!touch)
+      {
+            if (LED[ran1].sense())
+            {
+                  touch = true;
+                  one.addScore();
+            }
+            else if (LED[ran2].sense())
+            {
+                  touch = true;
+                  two.addScore();
+            }
+      }
+      LED[ran1].off();
+      LED[ran2].off();
+      delay(GAME_DELAY);
+}
+
+void endgame()
+{
+      for (int i = 0; i < NUM_OF_KEYS; i++)
+      {
+
+            if (one.getScore() > two.getScore())
+            {
+                  //if player 1 wins
+                  LED[i].on1();
+            }
+            else if (two.getScore() > one.getScore())
+            {
+                  //if player 2 wins
+                  LED[i].on2();
+            }
+
+            else
+            {
+                  for (int i = 0; i < NUM_OF_KEYS / 2; i++)
+                  {
+                        LED[i].on1();
+                        LED[i + NUM_OF_KEYS / 2].on2();
+                        delay(REFRESH_DELAY);
+                  }
+            }
+      }
+
+      delay(SPLASH_DELAY);
+
+      for (int i = 0; i < NUM_OF_KEYS; i++)
+      {
+            LED[i].off();
+            delay(REFRESH_DELAY);
+      }
+}
+
+void loop()
+{
+
+      startgame();
+      // Log time before game start
+      while (millis() < GAME_TIME * 1000)
+      {
+            rungame();
+      }
+      endgame();
+      // restart rungame if game time not over
+      // else launch endgame
+      while (true)
+      {
+            delay(1);
+      }
 }

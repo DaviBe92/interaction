@@ -1,4 +1,5 @@
 # pragma once
+#include "player.h"
 
 class Player {
     public:
@@ -17,4 +18,4 @@ class Player {
     protected:
     int _score;
 
-}
+};
