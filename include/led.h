@@ -63,5 +63,6 @@ class LedRing
     int _number;
     bool _state;
     CapacitiveSensor *_sensor;
-
+    
+ 
 };

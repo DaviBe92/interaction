@@ -6,19 +6,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+// LedRing(fortlaufende Nummer, Anschluss Pin)
 LedRing LED[] = {LedRing(0, 2), LedRing(1, 3), LedRing(2, 4), LedRing(3, 5)};
+
+//initalize players
 Player one;
 Player two;
 
-// This function sets up the ledsand tells the controller about them
+
 void setup()
 {
+      // This function sets up the LEDs and tells the controller about them
       FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS * NUM_OF_KEYS);
       //Random seed
       randomSeed(analogRead(0));
-      Serial.begin(9600);
-      Serial.println("SETUP");
 }
+
+//gamelogic
 
 void startgame()
 {
@@ -65,9 +69,10 @@ void rungame()
       LED[ran1].on1();
       LED[ran2].on2();
 
-      // wait for input, (timeout?)
+      // wait for input, (timeout)
       bool touch = false;
-      while (!touch)
+      unsigned long currentTime = millis();       
+      while (!touch && millis() < currentTime + GAME_TIMEOUT)
       {
             if (LED[ran1].sense())
             {
@@ -82,6 +87,8 @@ void rungame()
       }
       LED[ran1].off();
       LED[ran2].off();
+
+      //delay between rounds
       delay(GAME_DELAY);
 }
 
@@ -93,7 +100,7 @@ void endgame()
             if (one.getScore() > two.getScore())
             {
                   //if player 1 wins
-                  LED[i].on1();
+                  LED[i].on1(); 
             }
             else if (two.getScore() > one.getScore())
             {
@@ -123,18 +130,16 @@ void endgame()
 
 void loop()
 {
-
+      
       startgame();
       // Log time before game start
-      while (millis() < GAME_TIME * 1000)
+      unsigned long time = millis();
+      while (millis() < time + GAME_TIME * 1000)
       {
             rungame();
       }
       endgame();
       // restart rungame if game time not over
       // else launch endgame
-      while (true)
-      {
-            delay(1);
-      }
+      delay(1000);
 }

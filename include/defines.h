@@ -19,10 +19,10 @@
 // led refresh delay
 #define REFRESH_DELAY 200
 // Splash screen delay
-#define SPLASH_DELAY 4000
+#define SPLASH_DELAY 3000
 // Game timer in seconds
 #define GAME_TIME 30
 // Game delay
 #define GAME_DELAY 300
 // TIMEOUT
-#define GAME_TIMEOUT 500
+#define GAME_TIMEOUT 1000
